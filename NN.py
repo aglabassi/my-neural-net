@@ -198,4 +198,4 @@ X, y = X_train + X_test, y_train + y_test
 
 nn.fit( X_train, y_train, epsilon = 0.05 , learning_rate = 0.5 , regularization_parameter = 0.0005 )
 
-print( np.mean( a.predict(X) == y ) )
+print( np.mean( nn.predict(X) == y ) )
