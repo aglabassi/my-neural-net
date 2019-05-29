@@ -35,11 +35,11 @@ def gen_dataset(fc, input_dim, sep = 0.8):
     for x in X:
         y = fc.reduce(x)
         if y:
-            ypos.append(y)
+            ypos.append([y])
             Xpos.append(x)
             
         else:
-            yneg.append(y)
+            yneg.append( [ y ] )
             Xneg.append(x)
             
     tpos, tneg = int(np.around(sep*len(Xpos))), int(np.around(sep*len(Xneg)))
@@ -55,3 +55,15 @@ def dsigmoid(z):
 def sigmoid(z):
     
     return 1/(1+np.exp(-z))
+
+
+def accuracy(mat1,mat2):
+    temp = 0
+    m = len(mat1)
+    
+    for i in range(len(mat1)):
+        temp = temp + np.mean( mat1[i] == mat2[i] )
+        
+    return temp/m
+        
+        
