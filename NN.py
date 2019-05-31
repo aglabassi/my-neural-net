@@ -57,7 +57,6 @@ class NeuralNetworkCLF:
             
             #Gradient descent
             for i in range(len(self.W)): 
-                
                     self.W[i] = self.W[i] - learning_rate*gradJ[i]
                     
             
@@ -75,21 +74,17 @@ class NeuralNetworkCLF:
         
         
         fitting_term =0
-        for i in range(dataset_size):
-            
+        for i in range(dataset_size):    
             output_i, target_i = self._output( X[i] ), Y[i]
             
-            for j in range(len(Y[0])):   
-                
+            for j in range(len(Y[0])):
                 fitting_term = fitting_term + cost1D( output_i[j], target_i[j] )
         
         fitting_term = fitting_term / dataset_size 
-        
-        #We dont include biases in reg. term
+       
         regularization_term = 0
-        for l in range(len(self.W)):
-            
-            regularization_term =  np.sum(self.W[l][:,1:])
+        for l in range(len(self.W)):  
+            regularization_term =  np.sum(self.W[l][:,1:])  #We dont include biases in reg. term
         
         
         regularization_term = regularization_parameter * regularization_term / (2*dataset_size)
@@ -127,23 +122,23 @@ class NeuralNetworkCLF:
                                         bool(j) * regularization_parameter * self.W[l][i,j]
         
         
-        #We store the partial derivative in a datastructure of exact same format as self.W
-        
+        #We store the partial derivative in a datastructure of exact same format as self.W   
         gradJ = [ form_matrix( acc_normalyzer(l), acc[l].shape ) for l in range( len(acc) ) ] 
         
         return gradJ
     
     
     
-    #Computes Djdi of each neurons n. DJdi is the derivative of J in respect 
-    #of the inputs of each neuron n, stocked a natural list of list format
-    #We define "input of a neuron" as the things that comes to it activation function,
-    #We define "output of a neuron" as it activation.
-    # We similarly define "input/output of a layer"
+    #Computes DJdi of each neurons n. DJdi is the derivative of J in respect 
+    #of the inputs of each neuron n, stocked a natural list-of-list format.
+    #We define "input of a neuron" as the thing that comes to it activation function, i.e wx + b,
+    #We define "output of a neuron" as its activation.
+    #We similarly define "input/output of a layer"
     def _compute_DJdis(self, activations, y):
         
-        res = [0]*self.nlayers  #No error in layer 0, so res[0] 
-        res[-1] = np.array( activations[-1][1:] - y )
+        res = [0]*self.nlayers  #Neurons on layer 0 dont have inputs, so we keep res[0] = 0.
+        res[-1] = np.array( activations[-1][1:] - y ) 
+        
         for i in range(self.nlayers - 2, 0, -1):
             
             #Derivative of error according to output of current layer, backpropaging
@@ -181,7 +176,6 @@ class NeuralNetworkCLF:
             
     #Compute the output of the neural net given an input x
     def _output(self,x):
-        
         return list( self._forward_propagate( x, self.nlayers - 1  )[-1][1:] )
     
     
@@ -196,13 +190,12 @@ class NeuralNetworkCLF:
         for i in range( len(res) ):
             
             if bin_clf:
-    
                 res[i][0] = 1 if res[i][0] > 0.5 else 0
             
             else:
-                max_idx = res[i].index( max(res[i]) )
+                max_idx = res[i].index( max(res[i]) ) 
                 
-                for j in range( len(res[0] ) ):
+                for j in range( len( res[0] ) ):
                     if j == max_idx:
                         res[i][j] = 1
                     else:
