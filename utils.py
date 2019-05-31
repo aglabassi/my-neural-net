@@ -17,15 +17,14 @@ def form_matrix(fc, shape):
     res = np.zeros(shape)
     
     for i in range(shape[0]):      
-        for j in range(shape[1]):
-            
+        for j in range(shape[1]):       
             res[i,j] = fc(i,j)
             
     return res
 
 #Assert fc is logical binary fonction. Generate a training/test set according to
 # fc and sep    
-def gen_dataset(fc, input_dim, sep = 0.8):
+def gen_dataset_alrd_splitted( fc, input_dim, sep = 0.8 ):
     
     X =  [ [ int(s) for s in np.binary_repr(i,input_dim) ] for i in range(2**input_dim)  ]
     
