@@ -26,7 +26,7 @@ class NeuralNetworkCLF:
         
         self.hiden_layers_sizes = hiden_layers_sizes 
         
-        self.nlayers = len(hiden_layers_sizes) + 2 #io layers
+        self.nlayers = len( hiden_layers_sizes) + 2 #io layers
       
     
     
@@ -36,7 +36,7 @@ class NeuralNetworkCLF:
     def fit(self,X,Y, learning_rate = 0.5, regularization_parameter = 0.0005, epsilon = 0.05):
         
         # sizes[l] gives the number of neurons in layer l.
-        sizes = [ len(X[0]) ] + list(self.hiden_layers_sizes) + [ len(Y[0]) ]
+        sizes = [ len(X[0]) ] + list( self.hiden_layers_sizes ) + [ len(Y[0]) ]
         
         
         #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
@@ -47,17 +47,17 @@ class NeuralNetworkCLF:
         
         while( True ):
             
-            error = np.abs(self._J(X,Y,regularization_parameter))
-            print(error)
+            error = np.abs( self._J( X, Y, regularization_parameter ) ) 
+            print( error )
             
             if error < epsilon:
                 break
             
-            gradJ = self._gradJ(X, Y, regularization_parameter)
+            gradJ = self._gradJ( X, Y, regularization_parameter )
             
-            #Gradient descent
-            for i in range(len(self.W)): 
-                    self.W[i] = self.W[i] - learning_rate*gradJ[i]
+            #Gradient descent. Upgrade W layer by layer
+            for i in range( len( self.W ) ): 
+                    self.W[i] = self.W[i] - learning_rate * gradJ[i]
                     
             
                     
@@ -73,18 +73,18 @@ class NeuralNetworkCLF:
         cost1D = lambda oj,yj: -( yj * np.log( oj ) + (1 - yj) * np.log( 1-oj ) )    
         
         
-        fitting_term =0
+        fitting_term = 0
         for i in range(dataset_size):    
             output_i, target_i = self._output( X[i] ), Y[i]
             
-            for j in range(len(Y[0])):
+            for j in range( len( Y[0] ) ):
                 fitting_term = fitting_term + cost1D( output_i[j], target_i[j] )
         
         fitting_term = fitting_term / dataset_size 
        
         regularization_term = 0
         for l in range(len(self.W)):  
-            regularization_term =  np.sum(self.W[l][:,1:])  #We dont include biases in reg. term
+            regularization_term =  np.sum( self.W[l][:,1:] )  #We dont include biases in reg. term
         
         
         regularization_term = regularization_parameter * regularization_term / (2*dataset_size)
@@ -101,15 +101,15 @@ class NeuralNetworkCLF:
     def _gradJ(self,X,Y,regularization_parameter ):
         
         m = len(X)
-        acc = [ np.zeros(w.shape) for w in self.W ] #acc is used to compute gradJ 
-        for i in range(m):
+        acc = [ np.zeros( w.shape ) for w in self.W ] #acc is used to compute gradJ 
+        for i in range( m ):
             
             acts = self._forward_propagate( X[i], self.nlayers - 1 )
             
-            all_dJdis = self._compute_DJdis(acts, Y[i])
+            all_dJdis = self._compute_DJdis( acts, Y[i] )
             
             #Upgrade acc
-            for l in range(len(acc)) :
+            for l in range( len( acc ) ) :
                 
                 dJdi = np.transpose( [all_dJdis[l+1]] )
                 
@@ -146,7 +146,7 @@ class NeuralNetworkCLF:
             dJdo  = np.transpose( np.dot(np.transpose(self.W[i]), res[i+1] ))[1:]
             
             #Derivative of output according to inputs relative to the current layer.
-            dodi = dsigmoid(np.dot(self.W[i-1], activations[i-1]))
+            dodi = dsigmoid( np.dot( self.W[i-1],  activations[i-1] )  )
             
             res[i] = dJdo * dodi
         
@@ -159,14 +159,14 @@ class NeuralNetworkCLF:
     #include bias units 's output, wich is 1 for every layer.
     def _forward_propagate(self, x, l):
         
-        ai,i = np.concatenate(([1], x)) , 0
+        ai,i = np.concatenate( ([1], x) ) , 0
         activations = [ ai ]
         
         #Forward propagation
         while i < l:
             
             ai = sigmoid( np.dot(self.W[i], ai) )
-            ai =  np.concatenate(([1],ai) )
+            ai =  np.concatenate( ([1], ai) )
             
             activations.append( ai )
             i = i + 1 
@@ -187,7 +187,7 @@ class NeuralNetworkCLF:
         
         bin_clf = len( res[0] )  == 1
         
-        for i in range( len(res) ):
+        for i in range( len( res ) ):
             
             if bin_clf:
                 res[i][0] = 1 if res[i][0] > 0.5 else 0
@@ -207,7 +207,7 @@ class NeuralNetworkCLF:
         
         
         
-nn = NeuralNetworkCLF([2])
+nn = NeuralNetworkCLF( [2 ])
 
 X_train, X_test, y_train, y_test = gen_dataset( np.logical_xor, 2, sep = 0.8 )
 
@@ -215,8 +215,8 @@ X, y = X_train + X_test, y_train + y_test
 
 nn.fit( X_train, y_train, epsilon = 0.05 , learning_rate = 0.15 , regularization_parameter = 0.0005 )
 
-
-predicted = nn.predict(X)
+#We predict on all instances because dataset is small
+predicted = nn.predict( X_train + X_test )
 
 #We try in all instances because dataset is small
-print( np.mean( predicted == y ) )
+print( np.mean( predicted == (y_train + y_test) ) )
