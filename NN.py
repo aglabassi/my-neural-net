@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 29 15:07:46 2019
-
-@author: Abdel
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
 Created on Sun May 27 10:32:21 2019
 
 @author: Abdel Ghani Labassi
