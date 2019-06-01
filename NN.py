@@ -199,7 +199,7 @@ class NeuralNetworkCLF:
         
 nn = NeuralNetworkCLF( [2 ])
 
-X_train, X_test, y_train, y_test = gen_dataset( np.logical_xor, 2, sep = 0.8 )
+X_train, X_test, y_train, y_test = gen_dataset_alrd_splitted( np.logical_xor, 2, sep = 0.8 )
 
 X, y = X_train + X_test, y_train + y_test
 
