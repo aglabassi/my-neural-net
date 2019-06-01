@@ -19,7 +19,7 @@ from utils import *
 
 #An implementation of neural network learning algorithm using crossentropy cost
 #function and gradient descent for its minimization. Gradient is computed according
-#to the backpropagation algorithm
+#to the backpropagation algorithm.
 class NeuralNetworkCLF:
   
     def __init__(self, hiden_layers_sizes ):
@@ -39,10 +39,9 @@ class NeuralNetworkCLF:
         sizes = [ len(X[0]) ] + list( self.hiden_layers_sizes ) + [ len(Y[0]) ]
         
         
-        #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
-        #number l, input layer being layer number 0.
+        #W[l][i,j] gives weigth of the arc (j,i), node i being in layer number l, input layer being layer number 0.
         self.W = [  np.random.rand( int(sizes[l+1]), int(sizes[l] + 1)  ) 
-                    for l in range( self.nlayers - 1 ) ]
+                    for l in range( self.nlayers - 1 ) ]  #biases comming out of layer l are in W[l][:, 0 ]
         
         
         while( True ):
@@ -64,29 +63,28 @@ class NeuralNetworkCLF:
       
     #Cost function : Evaluates the quality of the parameters depending on the 
     #training examples    
-    def _J( self,X,Y,regularization_parameter ):
+    def _J( self, X, Y, regularization_parameter ):
         
-        dataset_size = len(X)
+        dataset_size = len( X )
     
             
         #cost for a single coordinate of the output
-        cost1D = lambda oj,yj: -( yj * np.log( oj ) + (1 - yj) * np.log( 1-oj ) )    
+        cost1D = lambda oj, yj: -( yj * np.log( oj ) + (1 - yj) * np.log( 1-oj ) )    
         
         
+        #Computing fitting term
         fitting_term = 0
         for i in range(dataset_size):    
             output_i, target_i = self._output( X[i] ), Y[i]
-            
             for j in range( len( Y[0] ) ):
                 fitting_term = fitting_term + cost1D( output_i[j], target_i[j] )
-        
         fitting_term = fitting_term / dataset_size 
        
+        
+        #Computing regularization term
         regularization_term = 0
         for l in range(len(self.W)):  
             regularization_term =  np.sum( self.W[l][:,1:] )  #We dont include biases in reg. term
-        
-        
         regularization_term = regularization_parameter * regularization_term / (2*dataset_size)
         
         
@@ -118,6 +116,7 @@ class NeuralNetworkCLF:
                 acc[l] = acc[l] + np.matmul( dJdi, didw )
     
         #Form gradient by normalizing acc
+      
         acc_normalyzer = lambda l: lambda i,j: acc[l][i,j] / len(X) + \
                                         bool(j) * regularization_parameter * self.W[l][i,j]
         
@@ -154,8 +153,8 @@ class NeuralNetworkCLF:
     
     
     
-    #returns the activations given the forward prop. of input x until the lth
-    #layer, including the lth layer, and including inputs activation. We also 
+    #returns the activations given the forward prop. of input x until the lth layer, 
+    #including the lth layer, and including inputs activation. We also 
     #include bias units 's output, wich is 1 for every layer.
     def _forward_propagate(self, x, l):
         
@@ -179,8 +178,7 @@ class NeuralNetworkCLF:
         return list( self._forward_propagate( x, self.nlayers - 1  )[-1][1:] )
     
     
-    #Gives an intepretation of what is displayed on output layer for each instances
-    #of X
+    #Gives an intepretation of what is displayed on output layer for each instances of X
     def predict(self, X):
         
         res = [ self._output(x) for x in X ]
