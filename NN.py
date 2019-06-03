@@ -210,13 +210,11 @@ class NeuralNetworkCLF:
     def predict(self, X):
         
         res = [ self._output(x) for x in X ]
-        
         bin_clf = len( res[0] )  == 1
         
         for i in range( len(res) ):
             
             if bin_clf:
-    
                 res[i][0] = 1 if res[i][0] > 0.5 else 0
             
             else:
