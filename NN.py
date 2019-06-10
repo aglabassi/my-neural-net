@@ -36,27 +36,32 @@ class NeuralNetworkCLF:
         #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
         #number l, input layer being layer number 0.
         self.W = np.array( [  np.random.rand( int(sizes[l+1]), int(sizes[l] + 1)  ) 
-                    for l in range( self.nlayers - 1 ) ] )
+                                                 for l in range( self.nlayers - 1 ) ] )
         
         J_calculator = self._get_J_calculator( X, Y, regularization_parameter )
         gradJ_caclulator = self._get_gradJ_calculator( X,Y, regularization_parameter )
         
+        #Gradient descent
         while( True ):
             
-            error = np.abs( J_calculator( self.W  )  )
-            
+            #Computing error
+            error = np.abs( J_calculator( self.W  )  ) 
             print( "error:", error)
             
+            #Stopping criterion
             if error < epsilon:
                 break
             
+            #Computing gradient
             gradJ = gradJ_caclulator( self.W )
             
             if gradient_checking :
+                
                 gradJ_approx = self._approx_gradJ( J_calculator, epsilon = 0.0005 )
+                
                 print( "gradient checking error:", 
                       max( [ np.amax( np.abs( gradJ_approx[l] - gradJ[l] ) ) 
-                      for l in range( len( self.W ) ) ] ) ) 
+                                               for l in range( len( self.W ) ) ] ) ) 
             
             #Perforiming a single gradient descent iteation
             for i in range( len( self.W ) ): 
@@ -77,16 +82,21 @@ class NeuralNetworkCLF:
             cost1D = lambda oj,yj: -( yj * np.log( oj ) + (1 - yj) * np.log( 1-oj ) )    
 
             fitting_term =0
+            
             for i in range(dataset_size):
+                
                 output_i, target_i = self._output( X[i] ), Y[i]
-                for j in range(len(Y[0])):   
+                for j in range(len(Y[0])):              
                     fitting_term = fitting_term + cost1D( output_i[j], target_i[j] )
+                    
             fitting_term = fitting_term / dataset_size 
             
             #We dont include biases in reg. term
             regularization_term = 0
-            for l in range(len( W )):  
-                regularization_term =  np.sum( W[l][:,1:] )         
+            
+            for l in range(len( W )):
+                regularization_term =  np.sum( W[l][:,1:] )  
+                
             regularization_term = regularization_parameter * regularization_term / (2*dataset_size)
             
             return fitting_term + regularization_term
@@ -125,7 +135,10 @@ class NeuralNetworkCLF:
         def gradJ_calculator( W ):
 
             m = len(X)
-            acc = [ np.zeros(w.shape) for w in self.W ] #acc is used to compute gradJ 
+            #acc is used to compute gradJ 
+            acc = [ np.zeros(w.shape) for w in self.W ]
+            
+            #Computing acc
             for i in range(m):
                 
                 activations = self._forward_propagate( X[i], self.nlayers - 1 )
@@ -149,17 +162,17 @@ class NeuralNetworkCLF:
             #We store the partial derivative in a datastructure of exact same format as self.W
             
             return np.array( [ form_matrix( acc_normalizer(l), acc[l].shape ) 
-                              for l in range( len(acc) ) ] ) 
+                                             for l in range( len(acc) ) ] ) 
         
         return gradJ_calculator
         
     
     
     #Computes Djdi of each neurons n. DJdi is the derivative of J in respect 
-    #of the inputs of each neuron n, stocked a natural list of list format
-    #We define "input of a neuron" as the things that comes to it activation function,
+    #of the inputs of each neuron n.
+    #We define "input of a neuron" as the value what comes to it activation function,
     #We define "output of a neuron" as it activation.
-    # We similarly define "input/output of a layer"
+    #We similarly define "input/output of a layer"
     def _compute_dJdis(self, activations, y):
         
         res = [0]*self.nlayers  #No error in layer 0, so res[0] 
@@ -179,7 +192,7 @@ class NeuralNetworkCLF:
     
     
     
-    #returns the activations given the forward prop. of input x until the lth
+    #Returns the activations given the forward prop. of input x until the lth
     #layer, including the lth layer, and including inputs activation. We also 
     #include bias units 's output, wich is 1 for every layer.
     def _forward_propagate(self, x, l):
