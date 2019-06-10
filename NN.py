@@ -26,8 +26,7 @@ class NeuralNetworkCLF:
       
     #X and Y are assumed to be list of list, where lines corresponds to instances of
     #the dataset.
-    def fit(self,X,Y, learning_rate = 0.5, regularization_parameter = 0.0005, 
-            epsilon = 0.05, gradient_checking = False):
+    def fit(self,X,Y, learning_rate = 0.5, regularization_parameter = 0.0005, epsilon = 0.05, gradient_checking = False):
         
         # sizes[l] gives the number of neurons in layer l.
         sizes = [ len(X[0]) ] + list(self.hiden_layers_sizes) + [ len(Y[0]) ]
