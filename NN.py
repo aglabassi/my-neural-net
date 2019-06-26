@@ -17,9 +17,8 @@ class NeuralNetworkCLF:
     
     
     def __init__(self, hiden_layers_sizes ):
-    
-        self.hiden_layers_sizes = hiden_layers_sizes 
         
+        self.hiden_layers_sizes = hiden_layers_sizes 
         self.nlayers = len(hiden_layers_sizes) + 2 #io layers
     
     
@@ -34,8 +33,7 @@ class NeuralNetworkCLF:
         
         #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
         #number l, input layer being layer number 0.
-        self.W = np.array( [  np.random.rand( int(sizes[l+1]), int(sizes[l] + 1)  ) 
-                                                 for l in range( self.nlayers - 1 ) ] )
+        self.W = np.array( [  np.random.rand( int(sizes[l+1]), int(sizes[l] + 1)  ) for l in range( self.nlayers - 1 ) ] )
         
         J_calculator = self._get_J_calculator( X, Y, regularization_parameter )
         gradJ_caclulator = self._get_gradJ_calculator( X,Y, regularization_parameter )
@@ -154,8 +152,7 @@ class NeuralNetworkCLF:
                     acc[l] = acc[l] + np.matmul( dJdi, didw )
         
             #Form gradient by normalizing acc
-            acc_normalizer = lambda l: lambda i,j: acc[l][i,j] / len(X) + \
-                                            bool(j) * regularization_parameter * self.W[l][i,j]
+            acc_normalizer = lambda l: lambda i,j: acc[l][i,j] / len(X) + bool(j) * regularization_parameter * self.W[l][i,j]
             
             
             #We store the partial derivative in a datastructure of exact same format as self.W
