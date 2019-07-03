@@ -13,8 +13,7 @@ from utils import form_mat, accuracy, gen_dataset, sigmoid, dsigmoid
 #An implementation of a fully connected neural network learning algorithm using crossentropy 
 #cost function and gradient descent for its minimization.
 class FullyConnectedNN:
-    
-    
+   
     def __init__(self, hiden_layers_sizes):
         self.hiden_layers_sizes = hiden_layers_sizes 
         self.nlayers = len(hiden_layers_sizes) + 2 #io layers
