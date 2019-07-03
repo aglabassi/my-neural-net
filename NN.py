@@ -62,7 +62,7 @@ class FullyConnectedNN:
         def J_calculator(W):
             
             #cost for a single coordinate of the output
-            cost1D = lambda oj, yj: -( yj * np.log(oj) + (1-yj) * np.log(1-oj) )    
+            cost1D = lambda oj, yj: -( yj*np.log(oj) + (1-yj)*np.log(1-oj) )    
 
             fit_term =0
             for i in range(dataset_size):
