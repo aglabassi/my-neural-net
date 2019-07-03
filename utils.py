@@ -24,7 +24,7 @@ def form_matrix(fc, shape):
 
 #Assert fc is logical binary fonction. Generate a training/test set according to
 # fc and sep    
-def gen_dataset(fc, input_dim, sep = 0.8):
+def gen_dataset(fc, input_dim, sep=0.8):
     
     X =  [ [ int(s) for s in np.binary_repr(i,input_dim) ] for i in range(2**input_dim)  ]
     
@@ -38,7 +38,7 @@ def gen_dataset(fc, input_dim, sep = 0.8):
             Xpos.append(x)
             
         else:
-            yneg.append( [ y ] )
+            yneg.append([y])
             Xneg.append(x)
             
     tpos, tneg = int(np.around(sep*len(Xpos))), int(np.around(sep*len(Xneg)))
@@ -64,5 +64,5 @@ def accuracy(mat1,mat2):
         temp = temp + np.mean( mat1[i] == mat2[i] )
         
     return temp/m
-        
+
         
