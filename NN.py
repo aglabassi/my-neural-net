@@ -10,8 +10,8 @@ import numpy as np
 import copy
 from utils import form_mat, accuracy, gen_dataset, sigmoid, dsigmoid
 
-# An implementation of a fully connected neural network learning algorithm using crossentropy 
-# cost function and gradient descent for its minimization.
+#An implementation of a fully connected neural network learning algorithm using crossentropy 
+#cost function and gradient descent for its minimization.
 class FullyConnectedNN:
     
     
@@ -19,10 +19,7 @@ class FullyConnectedNN:
         self.hiden_layers_sizes = hiden_layers_sizes 
         self.nlayers = len(hiden_layers_sizes) + 2 #io layers
     
-    
-      
-    #X and Y are assumed to be list of list, where lines corresponds to instances of
-    #the dataset.
+   
     def fit(self,X, Y, lr=0.5, rp=0.0005, epsilon=0.05, check_gradient=False):
         
         sizes = [ len(X[0]) ] + list(self.hiden_layers_sizes) + [ len(Y[0]) ]
@@ -58,8 +55,7 @@ class FullyConnectedNN:
             
                     
       
-    #Cost function : Evaluates the quality of the parameters depending on the 
-    #training examples    ..
+    #Cost function : Evaluates the quality of the parameters depending on the training examples
     def _get_J_calculator(self, X, Y, rp):
         
         dataset_size = len(X)
@@ -79,7 +75,7 @@ class FullyConnectedNN:
             for l in range(len(W)):  
                 reg_term = reg_term + np.sum(W[l][:,1:]) #We dont include biases in reg. term 
             
-            #Normalysing terms
+            #Normalizing terms
             fit_term = fit_term / dataset_size 
             reg_term = rp * reg_term / (2*dataset_size)
             
@@ -144,8 +140,7 @@ class FullyConnectedNN:
         
     
     
-    #Computes Djdi of each neurons n. DJdi is the derivative of J in respect 
-    #of the inputs of each neuron n.
+    #Computes Djdi of each neurons n. DJdi is the derivative of J in respect of the inputs of each neuron n.
     #We define "input of a neuron" as the things that comes to it activation function,
     #We define "output of a neuron" as it activation.
     #We similarly define "input/output of a layer"
@@ -170,9 +165,8 @@ class FullyConnectedNN:
     
     
     
-    #Returns the acts given the forward prop. of input x until the lth
-    #layer, including the lth layer, and including inputs activation. We also 
-    #include bias units 's output, wich is 1 for every layer.
+    #Returns the acts given the forward prop. of input x until the lth layer, including the lth layer,
+    #and including inputs activation. We also include bias units 's output, wich is 1 for every layer.
     def _forward_propagate(self, x, l):
         
         ai,i = np.concatenate(([1], x)), 0
@@ -188,7 +182,7 @@ class FullyConnectedNN:
         return acts
 
             
-    #Compute the output of the neural net given an input x
+    #Compute the output given by the neural net given an input x
     def _output(self, x):
         return  self._forward_propagate(x, self.nlayers-1)[-1][1:]
     
