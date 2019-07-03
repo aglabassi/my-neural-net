@@ -16,36 +16,46 @@ from utils import form_matrix, accuracy, gen_dataset, sigmoid, dsigmoid
 class FullyConnectednnCLF:
     
     
-    def __init__(self, hiden_layers_sizes):
+    def __init__(self, hiden_layers_sizes ):
     
         self.hiden_layers_sizes = hiden_layers_sizes 
         self.nlayers = len(hiden_layers_sizes) + 2 #io layers
     
     
       
-    def fit(self, X, Y, lr=0.5, rp=0.0005, epsilon=0.05, gradient_checking=False):
+    #X and Y are assumed to be list of list, where lines corresponds to instances of
+    #the dataset.
+    def fit(self,X,Y, learning_rate = 0.5, regularization_parameter = 0.0005, 
+            epsilon = 0.05, gradient_checking = False):
         
         sizes = [ len(X[0]) ] + list(self.hiden_layers_sizes) + [ len(Y[0]) ]
         
         
         #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
         #number l, input layer being layer number 0.
-        self.W = [ np.random.rand(int(sizes[l+1]), int(sizes[l] + 1)) for l in range( self.nlayers - 1 ) ]
+        self.W = np.array( [  np.random.rand( int(sizes[l+1]), int(sizes[l] + 1)  ) 
+                    for l in range( self.nlayers - 1 ) ] )
         
         J_calculator = self._get_J_calculator(X,Y,rp)
         gradJ_caclulator = self._get_gradJ_calculator(X, Y, rp)
         
-        error = 1
-        while( error > epsilon ):
-            error = np.abs(J_calculator(self.W ))
-            print("error:", error)
+        while( True ):
             
-            gradJ = gradJ_caclulator(self.W)
+            error = np.abs( J_calculator( self.W  )  )
             
-            #Gradient computation checking 
+            print( "error:", error)
+            
+            if error < epsilon:
+                break
+            
+            gradJ = gradJ_caclulator( self.W )
+            
             if gradient_checking :
+                
                 gradJ_approx = self._approx_gradJ( J_calculator, epsilon = 0.0005 )
-                print( "gradient checking error:", max( [ np.amax( np.abs( gradJ_approx[l] - gradJ[l] ) ) for l in range( len( self.W ) ) ] ) ) 
+                print( "gradient checking error:", 
+                      max( [ np.amax( np.abs( gradJ_approx[l] - gradJ[l] ) ) 
+                      for l in range( len( self.W ) ) ] ) ) 
             
             #Single gradient descent iteation
             for l in range(len( self.W )): 
@@ -65,17 +75,18 @@ class FullyConnectednnCLF:
             #cost for a single coordinate of the output
             cost1D = lambda oj,yj: -( yj * np.log(oj) + (1-yj) * np.log(1-oj) )    
 
-            fit_term = 0
-            reg_term = 0
-             
-            #Computing terms
+            fitting_term =0
             for i in range(dataset_size):
-                output_i, target_i = self._output(X[i]), Y[i]  
+                output_i, target_i = self._output( X[i] ), Y[i]
                 for j in range(len(Y[0])):   
-                    fit_term += cost1D(output_i[j], target_i[j])
-                    
+                    fitting_term = fitting_term + cost1D( output_i[j], target_i[j] )
+            fitting_term = fitting_term / dataset_size 
+            
+            #We dont include biases in reg. term
+            regularization_term = 0
             for l in range(len( W )):  
-                reg_term += np.sum(W[l][:,1:])         
+                regularization_term =  np.sum( W[l][:,1:] )         
+            regularization_term = regularization_parameter * regularization_term / (2*dataset_size)
             
             #Normalysing terms
             fit_term = fit_term / dataset_size 
@@ -117,8 +128,7 @@ class FullyConnectednnCLF:
         def gradJ_calculator(W):
 
             m = len(X)
-            acc = [ np.zeros(w.shape) for w in self.W ] #acc is an accumulator used to compute gradJ 
-            
+            acc = [ np.zeros(w.shape) for w in self.W ] #acc is used to compute gradJ 
             for i in range(m):
                 acts = self._forward_propagate(X[i], self.nlayers-1)
                 all_dJdis = self._compute_dJdis(acts, Y[i])
@@ -130,23 +140,25 @@ class FullyConnectednnCLF:
                     acc[l] = acc[l] + np.matmul( dJdi, didw )
         
             #Form gradient by normalizing acc
-            acc_normalizer = lambda l: lambda i,j: acc[l][i,j] / len(X) + bool(j)*rp*self.W[l][i,j]
+            acc_normalizer = lambda l: lambda i,j: acc[l][i,j] / len(X) + \
+                                            bool(j) * regularization_parameter * self.W[l][i,j]
             
             
             #We store the partial derivative in a datastructure of exact same format as self.W
             
-            return [ form_matrix(acc_normalizer(l), acc[l].shape) for l in range(len(acc)) ]
+            return np.array( [ form_matrix( acc_normalizer(l), acc[l].shape ) 
+                              for l in range( len(acc) ) ] ) 
         
         return gradJ_calculator
         
     
     
     #Computes Djdi of each neurons n. DJdi is the derivative of J in respect 
-    #of the inputs of each neuron n.
-    #We define "input of a neuron" as the values that comes to it activation function,
-    #We define "output of a neuron" as the output of its activation.
+    #of the inputs of each neuron n, stocked a natural list of list format
+    #We define "input of a neuron" as the things that comes to it activation function,
+    #We define "output of a neuron" as it activation.
     # We similarly define "input/output of a layer"
-    def _compute_dJdis(self, acts, y):
+    def _compute_dJdis(self, activations, y):
         
         dJdis = [0]*self.nlayers  #No error in layer 0, so res[0] = 0
         dJdis[-1] = acts[-1][1:] - y
@@ -167,7 +179,7 @@ class FullyConnectednnCLF:
     
     
     
-    #returns the activations given the forward prop. of input x until the lth
+    #Returns the activations given the forward prop. of input x until the lth
     #layer, including the lth layer, and including inputs activation. We also 
     #include bias units 's output, wich is 1 for every layer.
     def _forward_propagate(self, x, l):
