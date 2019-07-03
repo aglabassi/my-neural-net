@@ -45,10 +45,10 @@ class FullyConnectedNN:
             
             if check_gradient :
                 gradJ_approx = self._approx_gradJ(J_calculator, epsilon=0.0005)
-                max_err = max( [ np.amax( np.abs( gradJ_approx[l] - gradJ[l] ) ) for l in range( len( self.W ) ) ] )
+                max_err = max( [ np.amax( np.abs( gradJ_approx[l] - gradJ[l] ) ) for l in range(len(self.W)) ] )
                 print( "gradient checking error:", max_err) 
             
-            for l in range(len( self.W )): 
+            for l in range(len(self.W)): 
                     self.W[l] = self.W[l] - lr*gradJ[l]
                     
             
