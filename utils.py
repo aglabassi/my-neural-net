@@ -10,7 +10,7 @@ import numpy as np
 
 #Form a matrix M where M[i,j] == fc(i,j). 
 #(fc is a 2-parameter function)
-def form_matrix(fc, shape):
+def form_mat(fc, shape):
     
     assert(len(shape) == 2)
     
