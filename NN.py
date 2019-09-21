@@ -23,7 +23,6 @@ class FullyConnectedNN:
         
         sizes = [ len(X[0]) ] + list(self.hiden_layers_sizes) + [ len(Y[0]) ]
         
-        
         #W[l][i,j] gives weigth of the arc (j,i), node i being in layer
         #number l, input layer being layer number 0.
         self.W = [ np.random.rand(int(sizes[l+1]), int(sizes[l] + 1)) for l in range( self.nlayers - 1 ) ] 
@@ -56,7 +55,7 @@ class FullyConnectedNN:
       
     #Cost function : Evaluates the quality of the parameters depending on the training examples
     def _get_J_calculator(self, X, Y, rp):
-        
+  
         dataset_size = len(X)
         
         def J_calculator(W):
@@ -225,4 +224,4 @@ nn.fit(X_train, y_train, epsilon=0.24 , lr=0.15 , rp=0.0005, check_gradient=Fals
 predicted = nn.predict(X_test)
 
 #We try in all instances because dataset is small
-print(accuracy( predicted, y_test))
+print(accuracy(predicted, y_test))

@@ -47,12 +47,10 @@ def gen_dataset(fc, input_dim, sep=0.8):
     
     return X_train, X_test, y_train, y_test
     
-def dsigmoid(z):
-    
+def dsigmoid(z): 
     return sigmoid(z)*(1-sigmoid(z))
  
-def sigmoid(z):
-    
+def sigmoid(z): 
     return 1/(1+np.exp(-z))
 
 
